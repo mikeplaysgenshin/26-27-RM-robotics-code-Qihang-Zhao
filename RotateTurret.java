@@ -16,6 +16,7 @@ public class RotateTurret{
       }
       if(Double degrees>0){
       RotatingTurret.setPower(1);
+        //letting the DcmotorMove
         sleep(Math.abs(degrees)/degreePerSecond*1000);
         RotatingTurret.setPower(0);
     }else{
