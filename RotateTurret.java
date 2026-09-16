@@ -3,7 +3,7 @@ public class RotateTurret{
   public DcMotorEx RotatingTurret;
   public double currentHeading=0;
   public double degreePerSecond;
-  //sensitivity=desired degreePerSecond*ticks/degreePerSecond at full power
+  //sensitivity=desired degreePerSecond/ticks/degreePerSecond at full power
   public double sensitivity;
   public RotateTurret(HardwareMap hardwareMap) {
     RotatingTurret = hardwareMap.get(DcMotorEx.class, "RotatingTurret");
