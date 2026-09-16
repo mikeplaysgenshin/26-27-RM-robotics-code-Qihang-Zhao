@@ -3,13 +3,16 @@ public class RotateTurret{
   public DcMotorEx RotatingTurret;
   public double currentHeading=0;
   public double degreePerSecond;
+  //sensitivity=desired degreePerSecond*ticks/degreePerSecond at full power
+  public double sensitivity;
   public RotateTurret(HardwareMap hardwareMap) {
     RotatingTurret = hardwareMap.get(DcMotorEx.class, "RotatingTurret");
   }
   public init(){
     currentHeading=0;
   }
-    public void Rotate(Double degrees){
+    //autonoumus  
+    public void AutoRotate(Double degrees){
       currentHeading+=degrees;
       if(currentHeading>-360){
         currentHeading-=360;
@@ -25,4 +28,8 @@ public class RotateTurret{
         RotatingTurret.setPower(0);
       }
     }
+  //teleOp
+      public void TeleRotate(float magnitude,int direction){
+        RotatingTurret.setPower(magnitude*sensitivity*direction);
+      }
 }
