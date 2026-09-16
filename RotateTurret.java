@@ -20,8 +20,11 @@ public class RotateTurret{
       
       currentHeading+=degrees;
       //reset
-      if(currentHeading>-360){
+      if(currentHeading>360){
         currentHeading-=360;
+      }
+       if(currentHeading<0){
+        currentHeading+=360;
       }
       //prevent rotating too much by setting boundary at 190/170 degrees
       if(degrees>0&&currentHeading>190){
@@ -49,11 +52,15 @@ public class RotateTurret{
     }
   //teleOp
       public void TeleRotate(float magnitude,int direction){
-        if(currentHeading>360){
-        currentHeading-=360;
-      }
+       
         //update heading
         currentheading+=ticksPerSecond*power*degreePerSecond;
+         if(currentHeading>360){
+        currentHeading-=360;
+      }
+          if(currentHeading<0){
+        currentHeading+=360;
+      }
         power=magnitude*sensitivity*direction;
         //if exceeds target of 190 forward/170 backward,rotate back
         if(currentheading>190&&direction==1){
