@@ -1,4 +1,6 @@
 import com.qualcomm.robotcore.hardware.Servo;
+import java.util.Timer;
+import java.util.TimerTask;
 public class RotateTurret{
   public DcMotorEx RotatingTurret;
   public double currentHeading=0;
@@ -35,18 +37,22 @@ public class RotateTurret{
         resetRotation=true;
       }
       if(Double degrees>0){
-      RotatingTurret.setPower(1);
-        isRotating=true;
+         RotatingTurret.setPower(1);
+                isRotating=true;
+       timer.schedule(new TimerTask() {
+       
+
         //letting the DcmotorMove
-        sleep(Math.abs(degrees)/degreePerSecond*1000);
         RotatingTurret.setPower(0);
         isRotating=false;
+       },Math.abs(degrees)/degreePerSecond);
     }else{
         RotatingTurret.setPower(-1);
         isRotating=true;
-        sleep(Math.abs(degrees)/degreePerSecond*1000);
+         timer.schedule(new TimerTask() {
         RotatingTurret.setPower(0);
         isRotating=false;
+        },Math.abs(degrees)/degreePerSecond);
       }
    resetRotation=false;
     }
@@ -67,16 +73,18 @@ public class RotateTurret{
           resetRotation=true;
           RotatingTurret.setPower(-1);
           isRotating=true;
-          sleep(360/degreePerSecond*1000); 
+           timer.schedule(new TimerTask() {
           RotatingTurret.setPower(0);
           isRotating=false;
+           },360/degreePerSecond*1000);
       }else if(currentheading<170&&direction==-1){
           resetRotation=true;
           RotatingTurret.setPower(1);
           isRotating=true;
-          sleep(360/degreePerSecond*1000); 
+         timer.schedule(new TimerTask() {
           RotatingTurret.setPower(0);
           isRotating=false;
+         },360/degreePerSecond*1000);
         }else{
           RotatingTurret.setPower(magnitude*sensitivity*direction);
         }
