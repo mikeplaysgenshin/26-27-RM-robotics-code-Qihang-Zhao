@@ -2,24 +2,97 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.Timer;
 import java.util.TimerTask;
 public class RotateTurret{
+  public double motorAccleration;
+  public double frictionDeceleration;//needs to be positive in degrees
   public DcMotorEx RotatingTurret;
   public double currentHeading=0;
-  public double degreePerSecond;
+  public double degreePerSecond;//rounds per second times 360 at full power
   public int ticksPerSecond;
   //sensitivity=desired degreePerSecond/ticks/degreePerSecond at full power
   public double sensitivity;
   public double power;
   public boolean resetRotation;
   public boolean isRotating;
+  public double maxPower;//power motor(* degreePerSecond to get angular velocity)
+  public double maxVelocity=maxPower*degreePerSecond/tickspersecond;
+  public double[] SafeMaxPower(double degreesRotation){
+    //change of x=velocity*time+half acceleration *time squared
+    //vf=vi+at
+    double timeStart=maxvelocity/motorAcceleration;
+    double timeStop=maxvelocity/frictionDecelration;
+    double maxStartingAngle=timeStart*timeStart*motorAcceleration;
+    double maxSlideDegree=timeStop*maxspeed*degreePerSecond-0.5*frictionDeceleration*time*time;
+    double[]returnList=new double[2];//1:timeacceleration,2:maxpower;
+    double timeMotorRun;
+    double timeCruise;
+    if(degrees>=maxSlideDegree+maxStartingAngle){
+      timeCruise=(degreeRotation-maxStartingAngle-maxSlidingAngle)/maxVelocity;
+      timeMotorRun=timeCruise+timeStart;
+      returnList={timeMotorRun,maxPower};
+      return returnList;
+    }else{
+      double totaltime=Math.sqrt((3/2*motorAcceleration-1/2*frictiondecelration)*degreesRotation)/(3/2*motorAcceleration-1/2*frictiondecelration);
+      timeMotorRun=totaltime-timeStop;
+      double maxPowerInstance=totaltime*acceleration/degreePerSecond*ticksPersecond;
+      returnList={timeMotorRun,maxPowerInstance};
+      return returnList;
+    }
+  }
   public RotateTurret(HardwareMap hardwareMap) {
     RotatingTurret = hardwareMap.get(DcMotorEx.class, "RotatingTurret");
   }
   public init(){
     currentHeading=0;
   }
+  public double[] motorTest(){//first acceleration,second friction
+    int rounds=0;
+    double currentPostition=0;
+    double lastPostition=0;
+    boolean first=true;
+    long startTime = System.nanoTime();
+    RotatingTurret.setPower(0.8);
+    while(speed<0.8*degreePerSecond){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+      }
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+    }
+    double totalangle=round*360+currentPosition;
+
+long endTime = System.nanoTime();
+long durationsec = endTime - startTime;long startTime = System.nanoTime()/1000000000;
+    double startAngle=RotatingTurret.getPosition();
+    double acceleration=2*totalangle/durationsec/durationsec;
+    rotatingTurret.setPower(0);
+    startTime = System.nanoTime();
+     while(speed>0){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+      }
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+    }
+    endTime = System.nanoTime();
+    durationsec = endTime - startTime;long startTime = System.nanoTime()/1000000000;
+    totalAngle=round*360+currentPosition-startAngle;
+    double deceleration=2*totalangle-(0.8*degreesPerSecond)*durationsec/durationsec/durationsec;
+  }
     //autonomous  
     public void AutoRotate(Double degrees){
-      
+    rotating  
       currentHeading+=degrees;
       //reset
       if(currentHeading>360){
@@ -37,7 +110,10 @@ public class RotateTurret{
         resetRotation=true;
       }
       if(Double degrees>0){
-         RotatingTurret.setPower(1);
+        double[] getList=MaxSafePower(degrees);
+        double power=getList[1];
+        double time=getList[0];
+         RotatingTurret.setPower(power);
                 isRotating=true;
        timer.schedule(new TimerTask() {
        
@@ -45,14 +121,17 @@ public class RotateTurret{
         //letting the DcmotorMove
         RotatingTurret.setPower(0);
         isRotating=false;
-       },Math.abs(degrees)/degreePerSecond);
+       },time);
     }else{
-        RotatingTurret.setPower(-1);
+        double[] getList=MaxSafePower(degrees);
+        double power=getList[1]*-1;
+        double time=getList[0];
+        RotatingTurret.setPower(power);
         isRotating=true;
          timer.schedule(new TimerTask() {
         RotatingTurret.setPower(0);
         isRotating=false;
-        },Math.abs(degrees)/degreePerSecond);
+        },time);
       }
    resetRotation=false;
     }
