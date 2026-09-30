@@ -13,11 +13,14 @@ public class RotateTurret{
   public double power;
   public boolean resetRotation;
   public boolean isRotating;
-  public double maxPower;//power motor(* degreePerSecond to get angular velocity)
-  public double maxVelocity=maxPower*degreePerSecond/tickspersecond;
-  public double[] SafeMaxPower(double degreesRotation){
+  public double[]speedList;
     //change of x=velocity*time+half acceleration *time squared
     //vf=vi+at
+    public double[]maxSafeSpeed(double degrees){
+        
+  public double maxPower;//power motor(* degreePerSecond to get angular velocity)
+  public double maxVelocity=maxPower*degreePerSecond/tickspersecond;
+  public double[] MaxSafePower(double degreesRotation){
     double timeStart=maxvelocity/motorAcceleration;
     double timeStop=maxvelocity/frictionDecelration;
     double maxStartingAngle=timeStart*timeStart*motorAcceleration;
@@ -25,6 +28,7 @@ public class RotateTurret{
     double[]returnList=new double[2];//1:timeacceleration,2:maxpower;
     double timeMotorRun;
     double timeCruise;
+    
     if(degrees>=maxSlideDegree+maxStartingAngle){
       timeCruise=(degreeRotation-maxStartingAngle-maxSlidingAngle)/maxVelocity;
       timeMotorRun=timeCruise+timeStart;
@@ -37,6 +41,41 @@ public class RotateTurret{
       returnList={timeMotorRun,maxPowerInstance};
       return returnList;
     }
+    }
+  }
+public double[] MaxSafePowernonLinear(double degreesRotation){
+    double timeStart=maxvelocity/motorAcceleration;
+    double timeStop=maxvelocity/frictionDecelration;
+    double maxStartingAngle=0;
+    for(int i=0;i<speedList.Length();i++){
+      maxStartingAngle+=speedList[i]/ticksPerSecond;
+    }
+    double maxSlideDegree=timeStop*maxspeed*degreePerSecond-0.5*frictionDeceleration*time*time;
+    double[]returnList=new double[2];//1:timeacceleration,2:maxpower;
+    double timeMotorRun;
+    double timeCruise;
+    double totalDistancAcc;
+    if(degrees>=maxSlideDegree+maxStartingAngle){
+      timeCruise=(degreeRotation-maxStartingAngle-maxSlidingAngle)/maxVelocity;
+      timeMotorRun=timeCruise+timeStart;
+      returnList={timeMotorRun,maxPower};
+      return returnList;
+    }else{
+      int counter=0;
+      double currentSpeed;
+      while((totalDictanceAcc+(speedlist[i]*speedlist[i])/frictiondeceleration*frictiondeceleration){
+        totalDictanceAcc+=speedList[counter]/ticksPerSecond;
+        counter++;
+        currentSpeed=speedList[counter];
+      }
+      
+      double totaltime=counter/ticksPerSecond;
+      returnList[1]=totaltime;
+      returnList[0]=currentSpeed*ticksPerSecond/degreePerSecond;
+      
+      return returnList;
+    }
+    }
   }
   public RotateTurret(HardwareMap hardwareMap) {
     RotatingTurret = hardwareMap.get(DcMotorEx.class, "RotatingTurret");
@@ -45,7 +84,7 @@ public class RotateTurret{
     currentHeading=0;
   }
   }
-  public double[] motorTestaccGrahph(){//uses derviative,returns instant acceleration graph
+  public double[] motorTestaccGraph(){//uses derviative,returns instant acceleration graph
      int rounds=0;
     double currentPostition=0;
     double lastPostition=0;
@@ -228,7 +267,7 @@ round+=1;
         resetRotation=true;
       }
       if(Double degrees>0){
-        double[] getList=MaxSafePower(degrees);
+        double[] getList=MaxSafeP/ower(degrees);
         double power=getList[1];
         double time=getList[0];
          RotatingTurret.setPower(power);
