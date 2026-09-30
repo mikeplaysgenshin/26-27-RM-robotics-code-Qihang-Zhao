@@ -44,13 +44,16 @@ public class RotateTurret{
   public init(){
     currentHeading=0;
   }
-  public double[] motorTest(){//first acceleration,second friction
-    int rounds=0;
+  }
+  public double[] motorTestaccGrahph(){//uses derviative,returns instant acceleration graph
+     int rounds=0;
     double currentPostition=0;
     double lastPostition=0;
     boolean first=true;
     long startTime = System.nanoTime();
     RotatingTurret.setPower(0.8);
+    double[]speedList=new doouble[1000];
+    double counter=0;
     while(speed<0.8*degreePerSecond){
       
       if(first){
@@ -61,8 +64,118 @@ public class RotateTurret{
       currentPosition=RotatingTurret.getPosition();
       if(currentPostion<lastPosition){
 round+=1;
-      }
+            speed=(currentPostion-lastPosition+360)/ticksPerSecond; 
+      }else{
       speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
+      speedList[counter]=speed;
+      counter++;
+    }
+    double[]accList=new double[1000];
+    for(int i=1;i<counter;i++){
+      accList=(speed[i]-speed[i-1])/ticksPerSecond;
+    }
+    return accList;
+
+  }
+    public double[] motorTestspeedGraph(){//uses derviative,returns instant acceleration graph
+     int rounds=0;
+    double currentPostition=0;
+    double lastPostition=0;
+    boolean first=true;
+    long startTime = System.nanoTime();
+    RotatingTurret.setPower(0.8);
+    double[]speedList=new doouble[1000];
+    double counter=0;
+    while(speed<0.8*degreePerSecond){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+            speed=(currentPostion-lastPosition+360)/ticksPerSecond; 
+      }else{
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
+      speedList[counter]=speed;
+      counter++;
+    }
+      return speedList;
+  }
+public double[] motorTestTotalDistance(){//first acceleration,second friction
+    int rounds=0;
+    double currentPostition=0;
+    double lastPostition=0;
+    boolean first=true;
+    long startTime = System.nanoTime();
+    RotatingTurret.setPower(0.8);
+    double[]returnList=new double[2];
+    while(speed<0.8*degreePerSecond){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+            speed=(currentPostion-lastPosition+360)/ticksPerSecond; 
+      }else{
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
+    }
+    double totalangle=round*360+currentPosition;
+    returnList[0]=totalangle;
+    rotatingTurret.setPower(0);
+    startTime = System.nanoTime();
+     while(speed>0){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+         speed=(currentPostion-lastPosition+360)/ticksPerSecond;
+      }else{
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
+    }
+    endTime = System.nanoTime();
+    durationsec = endTime - startTime;long startTime = System.nanoTime()/1000000000;
+    totalAngle=round*360+currentPosition-startAngle;
+  returnList[1]=totalangle;
+    return ReturnAngle;
+  }
+  public double[] motorTestLinear(){//first acceleration,second friction
+    int rounds=0;
+    double currentPostition=0;
+    double lastPostition=0;
+    boolean first=true;
+    long startTime = System.nanoTime();
+    RotatingTurret.setPower(0.8);
+    double[] returnList=new double[2];
+    while(speed<0.8*degreePerSecond){
+      
+      if(first){
+        first=false;
+      }else{
+        lastPosition=currentPosition;
+      }
+      currentPosition=RotatingTurret.getPosition();
+      if(currentPostion<lastPosition){
+round+=1;
+            speed=(currentPostion-lastPosition+360)/ticksPerSecond; 
+      }else{
+      speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
     }
     double totalangle=round*360+currentPosition;
 
@@ -81,14 +194,19 @@ long durationsec = endTime - startTime;long startTime = System.nanoTime()/100000
       }
       currentPosition=RotatingTurret.getPosition();
       if(currentPostion<lastPosition){
-round+=1;
-      }
+round+=1; 
+        speed=(currentPostion-lastPosition+360)/ticksPerSecond;
+      }else{
       speed=(currentPostion-lastPosition)/ticksPerSecond;
+      }
     }
     endTime = System.nanoTime();
     durationsec = endTime - startTime;long startTime = System.nanoTime()/1000000000;
     totalAngle=round*360+currentPosition-startAngle;
     double deceleration=2*totalangle-(0.8*degreesPerSecond)*durationsec/durationsec/durationsec;
+    returnList[0]=acceleration;
+    returnList[1]=deceleration;
+    return returnList;
   }
     //autonomous  
     public void AutoRotate(Double degrees){
