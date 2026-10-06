@@ -279,6 +279,9 @@ round+=1;
         RotatingTurret.setPower(0);
         isRotating=false;
        },time);
+         timer.schedule(new TimerTask() {
+              isRotating=false;
+         },timeStop);
     }else{
         double[] getList=MaxSafePower(degrees);
         double power=getList[1]*-1;
@@ -287,8 +290,10 @@ round+=1;
         isRotating=true;
          timer.schedule(new TimerTask() {
         RotatingTurret.setPower(0);
-        isRotating=false;
         },time);
+        timer.schedule(new TimerTask() {
+              isRotating=false;
+         },timeStop);
       }
    resetRotation=false;
     }
@@ -319,8 +324,10 @@ round+=1;
           isRotating=true;
          timer.schedule(new TimerTask() {
           RotatingTurret.setPower(0);
-          isRotating=false;
          },360/degreePerSecond*1000);
+          timer.schedule(new TimerTask() {
+              isRotating=false;
+         },timeStop);
         }else{
           RotatingTurret.setPower(magnitude*sensitivity*direction);
         }
